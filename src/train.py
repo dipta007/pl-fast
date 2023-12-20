@@ -30,9 +30,7 @@ def main():
     callbacks = [
         ModelCheckpoint(
             dirpath=checkpoint_dir,
-            filename="best_model_{}={{{}:.2f}}".format(
-                monitoring_metric.replace("/", "_"), monitoring_metric
-            ),
+            filename="best_model_{}={{{}:.2f}}".format(monitoring_metric.replace("/", "_"), monitoring_metric),
             auto_insert_metric_name=False,
             monitor=f"{monitoring_metric}",
             mode=monitoring_mode,
@@ -76,8 +74,7 @@ def main():
     print("Training")
     accumulate_grad_batches = (
         config.accumulate_grad_batches // config.batch_size
-        if config.batch_size < config.accumulate_grad_batches
-        or config.accumulate_grad_batches == -1
+        if config.batch_size < config.accumulate_grad_batches or config.accumulate_grad_batches == -1
         else 1
     )
     trainer = pl.Trainer(

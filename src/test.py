@@ -7,7 +7,6 @@ from dataloaders.dummy_datamodule import DummyDataModule
 import argparse
 
 
-
 def test(model_path):
     model = DummyModel.load_from_checkpoint(model_path)
 
@@ -28,15 +27,19 @@ def test(model_path):
 
     y = torch.cat(y, dim=0).view(-1)
     y_hat = torch.cat(y_hat, dim=0).view(-1)
-    
+
     print(y)
     print(y_hat)
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--checkpoint_dir", type=str, default="/nfs/ada/ferraro/users/sroydip1/dummy/checkpoints/", help="Checkpoint directory")
+    parser.add_argument(
+        "--checkpoint_dir",
+        type=str,
+        default="/nfs/ada/ferraro/users/sroydip1/dummy/checkpoints/",
+        help="Checkpoint directory",
+    )
     parser.add_argument("--exp_name", type=str, required=True, help="Experiment name")
     args = parser.parse_args()
 
