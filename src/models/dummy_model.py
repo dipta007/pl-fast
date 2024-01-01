@@ -24,14 +24,18 @@ class DummyModel(pl.LightningModule):
         text, label = batch
         y_hat = self(text)
         loss = self.criterion(y_hat.view(-1), label.view(-1))
-        self.get_metrics(label.view(-1), torch.sigmoid(y_hat.view(-1)), "train")
+        log_dict = self.get_metrics(label.view(-1), torch.sigmoid(y_hat.view(-1)), "train")
+        log_dict["train/loss"] = loss
+        self.log_dict(log_dict, prog_bar=True, batch_size=self.config.batch_size, sync_dist=self.config.ddp)
         return loss
 
     def validation_step(self, batch, batch_idx):
         text, label = batch
         y_hat = self(text)
         loss = self.criterion(y_hat.view(-1), label.view(-1))
-        self.get_metrics(label.view(-1), torch.sigmoid(y_hat.view(-1)), "valid")
+        log_dict = self.get_metrics(label.view(-1), torch.sigmoid(y_hat.view(-1)), "valid")
+        log_dict["valid/loss"] = loss
+        self.log_dict(log_dict, prog_bar=True, batch_size=self.config.batch_size, sync_dist=self.config.ddp)
         return loss
 
     def predict_step(self, batch, batch_idx):
@@ -42,9 +46,11 @@ class DummyModel(pl.LightningModule):
     def get_metrics(self, y, y_hat, mode):
         y_hat = y_hat > THRESHOLD
         acc = accuracy_score(y.cpu(), y_hat.cpu())
+
+        log_dict = {}
         if mode in ["train", "valid"]:
-            self.log(f"{mode}/acc", acc, prog_bar=True, batch_size=self.config.batch_size)
-        return acc
+            log_dict[f"{mode}/acc"] = acc
+        return log_dict
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.config.lr, weight_decay=self.config.weight_decay)

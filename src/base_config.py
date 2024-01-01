@@ -18,7 +18,7 @@ def add_data_args(parent_parser):
 
 def add_model_args(parent_parser):
     parser = parent_parser.add_argument_group("Model Config")
-    parser.add_argument("--exp_name", type=str, default="sem8", help="Experiement name?", required=True)
+    parser.add_argument("--exp_name", type=str, default="dummy", help="Experiement name?", required=True)
     parser.add_argument("--model_name", type=str, default="bert-base-uncased", help="Model name?")
     parser.add_argument("--weight_decay", type=float, default=0.01, help="Weight decay?")
     return parent_parser
@@ -33,6 +33,7 @@ def add_trainer_args(parent_parser):
     parser.add_argument("--early_stopping_patience", type=int, default=10, help="Early stopping patience? -1 if no early stopping")
     parser.add_argument("--monitoring_metric", type=str, default="valid/acc", help="Monitoring metric")
     parser.add_argument("--monitoring_mode", type=str, default="max", help="Monitoring mode")
+    parser.add_argument("--ddp", type=bool, default=False, action=argparse.BooleanOptionalAction, help="Use DDP?")
     return parent_parser
 
 def get_config():

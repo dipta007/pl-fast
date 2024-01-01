@@ -63,7 +63,7 @@ def main():
                 name=config.exp_name if config.exp_name != "sweep" else None,
             )
         ]
-        loggers[0].experiment.define_metric("valid/text_acc", summary="max")
+        loggers[0].experiment.define_metric("val/dummy", summary="max")
 
     print("Loading data")
     datamodule = DummyDataModule(config)
@@ -77,8 +77,11 @@ def main():
         if config.batch_size < config.accumulate_grad_batches or config.accumulate_grad_batches == -1
         else 1
     )
+
+    strategy = "ddp_find_unused_parameters_true" if config.ddp else 'auto'
     trainer = pl.Trainer(
-        accelerator="cpu",
+        accelerator="auto",
+        strategy=strategy,
         logger=loggers,
         callbacks=callbacks,
         val_check_interval=config.validate_every,
