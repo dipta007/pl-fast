@@ -10,13 +10,19 @@ from lightning.pytorch.loggers import WandbLogger
 from dataloaders.dummy_datamodule import DummyDataModule
 from models.dummy_model import DummyModel
 import base_config as config
+from utils import get_git_commit_hash
+from pprint import pprint
 import shutil
 import wandb
 
 wandb.login()
 
+print("="*100)
+print("===> Config")
 config = config.get_config()
-print(config)
+config.git_commit_hash = get_git_commit_hash()
+pprint(vars(config))
+print("="*100)
 
 
 def main():
@@ -61,6 +67,7 @@ def main():
                 project=config.wandb_project,
                 log_model=False,
                 name=config.exp_name if config.exp_name != "sweep" else None,
+                config=vars(config),
             )
         ]
         loggers[0].experiment.define_metric("val/dummy", summary="max")
