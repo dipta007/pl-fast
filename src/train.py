@@ -7,6 +7,7 @@ from lightning.pytorch.callbacks import (
     ModelCheckpoint,
 )
 from lightning.pytorch.loggers import WandbLogger
+from lightning.pytorch.loggers import CSVLogger
 from dataloaders.dummy_datamodule import DummyDataModule
 from models.dummy_model import DummyModel
 import base_config as config
@@ -59,18 +60,19 @@ def main():
             )
         )
 
-    loggers = False
+    loggers = [
+        CSVLogger(checkpoint_dir, name=config.exp_name)
+    ]
     if not config.debug:
-        loggers = [
-            WandbLogger(
-                entity=config.wandb_entity,
-                project=config.wandb_project,
-                log_model=False,
-                name=config.exp_name if config.exp_name != "sweep" else None,
-                config=vars(config),
-            )
-        ]
-        loggers[0].experiment.define_metric("val/dummy", summary="max")
+        wandb_logger = WandbLogger(
+            entity=config.wandb_entity,
+            project=config.wandb_project,
+            log_model=False,
+            name=config.exp_name if config.exp_name != "sweep" else None,
+            config=vars(config),
+        )
+        wandb.experiment.define_metric("val/dummy", summary="max")
+        loggers.append(wandb_logger)
 
     print("Loading data")
     datamodule = DummyDataModule(config)
