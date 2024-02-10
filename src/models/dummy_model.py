@@ -54,3 +54,18 @@ class DummyModel(pl.LightningModule):
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.config.lr, weight_decay=self.config.weight_decay)
+
+
+if __name__ == "__main__":
+    from src.base_config import get_config
+    config = get_config()
+    input_names = ['Sentence']
+    output_names = ['yhat']
+    model = DummyModel(config=config)
+    dummy_text = {
+        "text": {
+            'input_ids': torch.randint(0, 100, (2, 128)),
+            'attention_mask': torch.randint(0, 2, (2, 128))
+        }
+    }
+    torch.onnx.export(model, dummy_text, 'rnn.onnx', input_names=input_names, output_names=output_names)
