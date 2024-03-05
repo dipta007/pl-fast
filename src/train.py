@@ -81,23 +81,21 @@ def main():
     model = DummyModel(config)
 
     print("Training")
-    accumulate_grad_batches = (
-        config.accumulate_grad_batches // config.batch_size
-        if config.batch_size < config.accumulate_grad_batches and config.accumulate_grad_batches != -1
-        else 1
-    )
-
     strategy = "ddp_find_unused_parameters_true" if config.ddp else 'auto'
     trainer = pl.Trainer(
+        devices=config.devices,
         accelerator="auto",
         strategy=strategy,
         logger=loggers,
         callbacks=callbacks,
         val_check_interval=config.validate_every,
         max_epochs=config.max_epochs,
-        accumulate_grad_batches=accumulate_grad_batches,
+        accumulate_grad_batches=config.grad_accumulation_step,
         log_every_n_steps=1,
-        overfit_batches=config.overfit if config.overfit != 0 else 0.0,
+        overfit_batches=config.overfit_batches,
+        precision=config.precision,
+        gradient_clip_algorithm=config.gradient_clip_algorithm,
+        gradient_clip_val=config.gradient_clip_val,
     )
 
     print("Fitting")

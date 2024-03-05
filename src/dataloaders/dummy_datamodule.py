@@ -43,7 +43,7 @@ class DummyDataModule(pl.LightningDataModule):
             batch_size=self.config.batch_size,
             shuffle=True,
             collate_fn=self.collate_fn,
-            num_workers=1,
+            num_workers=self.config.num_workers,
         )
 
     def val_dataloader(self):
@@ -52,7 +52,7 @@ class DummyDataModule(pl.LightningDataModule):
             batch_size=self.config.batch_size,
             shuffle=False,
             collate_fn=self.collate_fn,
-            num_workers=1,
+            num_workers=self.config.num_workers,
         )
 
     def test_dataloader(self):
@@ -61,7 +61,7 @@ class DummyDataModule(pl.LightningDataModule):
             batch_size=self.config.batch_size,
             shuffle=False,
             collate_fn=self.collate_fn,
-            num_workers=1,
+            num_workers=self.config.num_workers,
         )
 
     def collate_fn(self, batch):
