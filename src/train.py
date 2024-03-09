@@ -46,6 +46,14 @@ def main():
             save_on_train_epoch_end=False,
             enable_version_counter=False,
         ),
+        ModelCheckpoint(
+            dirpath=checkpoint_dir,
+            filename="model_final",
+            verbose=True,
+            save_top_k=-1,
+            every_n_epochs=1,
+            enable_version_counter=False,
+        ),
         RichModelSummary(max_depth=1),
         RichProgressBar(leave=True),
     ]
